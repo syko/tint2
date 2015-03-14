@@ -2,9 +2,11 @@
 execute "tint2"
 or "tint2  -c  path_to_config_file"
 
+Fork of the tint2-svn trunk hosted on
+http://code.google.com/p/tint2/
+with all patch applied.
 
-check http://code.google.com/p/tint2/
-for latest release, documentation and sample config file.
+check the original project site for latest release, documentation and sample config file.
 
 
 
