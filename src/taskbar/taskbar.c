@@ -272,6 +272,51 @@ GPtrArray* task_get_tasks(Window win)
 }
 
 
+int is_window_visible(Window win)
+{
+	// Panel *panel = get_panel(win);
+	int monitor = window_get_monitor(win);
+	int x_pos, y_pos, throwaway;
+	unsigned int width, height, grandparent_width, grandparent_height, monitor_width, monitor_height, uthrowaway;
+	int grandparent_padding_w, grandparent_padding_h;
+	Window root_window, parent_window, grandparent_window, *child_windows;
+
+	// Here we need to get the xy position of the grandparent window instead because of some decorations and stuff
+	// The position of 'win' is always 0,0.
+	// I'm not sure if the grandparent window always works. It might be dependent on themes/styles/enabled effects and such
+	// but it works for me.
+
+	// Get parent window into *parent_window
+	XQueryTree(server.dsp, win, &root_window, &parent_window, &child_windows, &uthrowaway);
+	if(child_windows != NULL) XFree(child_windows);
+
+	// Get grandparent window into *grandparent_window
+	XQueryTree(server.dsp, parent_window, &root_window, &grandparent_window, &child_windows, &uthrowaway);
+	if(child_windows != NULL) XFree(child_windows);
+
+	// Get grandparent's geometry (x_pos, y_pos)
+	XGetGeometry(server.dsp, grandparent_window, &grandparent_window, &x_pos, &y_pos, &grandparent_width, &grandparent_height, &uthrowaway, &uthrowaway);
+
+	// Get child window's geometry (width, height)
+	XGetGeometry(server.dsp, win, &win, &throwaway, &throwaway, &width, &height, &uthrowaway, &uthrowaway);
+
+	grandparent_padding_w = (grandparent_width - width) / 2.0;
+	grandparent_padding_h = (grandparent_height - height) / 2.0;
+
+	x_pos += grandparent_padding_w;
+	y_pos += grandparent_padding_h;
+
+	monitor_height = server.monitor[monitor].height;
+	monitor_width = server.monitor[monitor].width;
+
+	if(x_pos < (int)monitor_width && x_pos+(int)width > 0 && y_pos < (int)monitor_height && y_pos+(int)height > 0)
+		return 1;
+	else
+		return 0;
+
+}
+
+
 void task_refresh_tasklist ()
 {
 	Window *win;
@@ -285,8 +330,12 @@ void task_refresh_tasklist ()
 	GList* it;
 	for (it=win_list; it; it=it->next) {
 		for (i = 0; i < num_results; i++)
-			if (*((Window*)it->data) == win[i])
-				break;
+			if (*((Window*)it->data) == win[i]) {
+				if( panel_mode == VIEWPORTS && !is_window_visible(win[i]) )
+					taskbar_remove_task(it->data, 0, 0);
+				else
+					break;
+			}
 		if (i == num_results)
 			taskbar_remove_task(it->data, 0, 0);
 	}
@@ -294,7 +343,7 @@ void task_refresh_tasklist ()
 
 	// Add any new
 	for (i = 0; i < num_results; i++)
-		if (!task_get_task (win[i]))
+		if (!task_get_task (win[i]) && ( panel_mode != VIEWPORTS || is_window_visible(win[i])) )
 			add_task (win[i]);
 
 	XFree (win);
@@ -305,7 +354,7 @@ void draw_taskbar (void *obj, cairo_t *c)
 {
 	Taskbar *taskbar = obj;
 	int state = (taskbar->desktop == server.desktop) ? TASKBAR_ACTIVE : TASKBAR_NORMAL;
-	
+
 	taskbar->state_pix[state] = taskbar->area.pix;
 }
 
@@ -319,7 +368,7 @@ int resize_taskbar(void *obj)
 	//printf("resize_taskbar %d %d\n", taskbar->area.posx, taskbar->area.posy);
 	if (panel_horizontal) {
 		resize_by_layout(obj, panel->g_task.maximum_width);
-		
+
 		text_width = panel->g_task.maximum_width;
 		GSList *l = taskbar->area.list;
 		if (taskbarname_enabled) l = l->next;
@@ -333,7 +382,7 @@ int resize_taskbar(void *obj)
 	}
 	else {
 		resize_by_layout(obj, panel->g_task.maximum_height);
-		
+
 		taskbar->text_width = taskbar->area.width - (2 * panel->g_taskbar.area.paddingy) - panel->g_task.text_posx -	panel->g_task.area.bg->border.width - panel->g_task.area.paddingx;
 	}
 	return 0;
@@ -363,7 +412,7 @@ void set_taskbar_state(Taskbar *tskbar, int state)
 		tskbar->bar_name.area.bg = panel1[0].g_taskbar.background_name[state];
 		tskbar->bar_name.area.pix = tskbar->bar_name.state_pix[state];
 	}
-	if (panel_mode != MULTI_DESKTOP) { 
+	if (panel_mode != MULTI_DESKTOP) {
 		if (state == TASKBAR_NORMAL)
 			tskbar->area.on_screen = 0;
 		else

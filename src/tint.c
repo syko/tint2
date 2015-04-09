@@ -671,6 +671,8 @@ void event_property_notify (XEvent *e)
 		// Change active
 		else if (at == server.atom._NET_ACTIVE_WINDOW) {
 			active_task();
+			if(panel_mode == VIEWPORTS)
+				task_refresh_tasklist();
 			panel_refresh = 1;
 		}
 		else if (at == server.atom._XROOTPMAP_ID || at == server.atom._XROOTMAP_ID) {
@@ -678,6 +680,9 @@ void event_property_notify (XEvent *e)
 			for (i=0 ; i < nb_panel ; i++) {
 				set_panel_background(&panel1[i]);
 			}
+			panel_refresh = 1;
+		} else if(at == server.atom._NET_DESKTOP_VIEWPORT) {
+			task_refresh_tasklist();
 			panel_refresh = 1;
 		}
 	}
@@ -691,7 +696,7 @@ void event_property_notify (XEvent *e)
 				// if it is mapped and not set as skip_taskbar, we must add it to our task list
 				XWindowAttributes wa;
 				XGetWindowAttributes(server.dsp, win, &wa);
-				if (wa.map_state == IsViewable && !window_is_skip_taskbar(win)) {
+				if (wa.map_state == IsViewable && !window_is_skip_taskbar(win) && is_window_visible(win)) {
 					if ( (tsk = add_task(win)) )
 						panel_refresh = 1;
 					else

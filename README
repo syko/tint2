@@ -1,3 +1,10 @@
+This fork adds support for compiz's viewports.
+Just add `taskbar_mode = viewports` to your config file and it will only show windows within the current viewport on the taskbar.
+
+The code is hacky and it's heavily based on the patch by Mendes from here https://code.google.com/p/tint2/issues/detail?id=286
+
+But it works. Tint2 + Desktop Cube ftw!
+
 ---------------------------------------------------------
 execute "tint2"
 or "tint2  -c  path_to_config_file"

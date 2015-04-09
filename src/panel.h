@@ -38,7 +38,7 @@ extern int mouse_tilt_left;
 extern int mouse_tilt_right;
 
 //panel mode
-enum { SINGLE_DESKTOP=0, MULTI_DESKTOP };
+enum { SINGLE_DESKTOP=0, MULTI_DESKTOP, VIEWPORTS };
 enum { BOTTOM_LAYER, NORMAL_LAYER, TOP_LAYER };
 extern int panel_mode;
 extern int wm_menu;

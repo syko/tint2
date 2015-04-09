@@ -36,7 +36,7 @@ typedef struct {
 	Pixmap state_pix[TASKBAR_STATE_COUNT];
 
 	Taskbarname bar_name;
-	
+
 	// task parameters
 	int text_width;
 } Taskbar;
@@ -66,6 +66,7 @@ GPtrArray* task_get_tasks(Window win);
 void task_refresh_tasklist ();
 
 int  resize_taskbar(void *obj);
+int is_window_visible(Window win);
 void on_change_taskbar (void *obj);
 void set_taskbar_state(Taskbar *tskbar, int state);
 

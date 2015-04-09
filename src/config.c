@@ -134,7 +134,7 @@ int config_get_monitor(char* monitor)
 			// monitor specified by name, not by index
 			int i, j;
 			for (i=0; i<server.nb_monitor; ++i) {
-				if (server.monitor[i].names == 0) 
+				if (server.monitor[i].names == 0)
 					// xrandr can't identify monitors
 					continue;
 				j = 0;
@@ -377,7 +377,7 @@ void add_entry (char *key, char *value)
 				g_free( panel_items_order );
 				panel_items_order = tmp;
 			}
-			else 
+			else
 				panel_items_order = g_strdup("C");
 		}
 		if (strlen(value) > 0) {
@@ -440,6 +440,7 @@ void add_entry (char *key, char *value)
 	/* Taskbar */
 	else if (strcmp (key, "taskbar_mode") == 0) {
 		if (strcmp (value, "multi_desktop") == 0) panel_mode = MULTI_DESKTOP;
+		else if (strcmp (value, "viewports") == 0) panel_mode = VIEWPORTS;
 		else panel_mode = SINGLE_DESKTOP;
 	}
 	else if (strcmp (key, "taskbar_distribute_size") == 0) {
@@ -812,7 +813,7 @@ int config_read_file (const char *path)
 		}
 	}
 	fclose (fp);
-	
+
 	// append Taskbar item
 	if (new_config_file == 0) {
 		taskbar_enabled = 1;
@@ -821,7 +822,7 @@ int config_read_file (const char *path)
 			g_free(panel_items_order);
 			panel_items_order = tmp;
 		}
-		else 
+		else
 			panel_items_order = g_strdup("T");
 	}
 

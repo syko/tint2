@@ -542,7 +542,7 @@ class TintWizardGUI(gtk.Window):
 		self.tableTaskbar.set_col_spacings(5)
 		
 		createLabel(self.tableTaskbar, text="Taskbar Mode", gridX=0, gridY=0, xPadding=10)
-		self.taskbarMode = createComboBox(self.tableTaskbar, ["single_desktop", "multi_desktop"], gridX=1, gridY=0, handler=self.changeOccurred)
+		self.taskbarMode = createComboBox(self.tableTaskbar, ["single_desktop", "multi_desktop", "viewports"], gridX=1, gridY=0, handler=self.changeOccurred)
 		self.registerComponent("taskbar_mode", self.taskbarMode)
 		
 		createLabel(self.tableTaskbar, text="Padding (x, y)", gridX=0, gridY=1, xPadding=10)
@@ -1623,7 +1623,7 @@ class TintWizardGUI(gtk.Window):
 			prop.activate()
 		elif eType == gtk.ComboBox:
 			# This allows us to select the correct combo-box value.
-			if string in ["bottom", "top", "left", "right", "center", "single_desktop", "multi_desktop", "single_monitor",
+			if string in ["bottom", "top", "left", "right", "center", "single_desktop", "multi_desktop", "viewports", "single_monitor",
 							"none", "close", "shade", "iconify", "toggle", "toggle_iconify", "maximize_restore",
 							"desktop_left", "desktop_right", "horizontal", "vertical", "ascending", "descending",
 							"left2right", "right2left", "next_task", "prev_task", "minimum", "follow_size", "normal"]:
@@ -1631,7 +1631,7 @@ class TintWizardGUI(gtk.Window):
 					i = 0
 				elif string in ["top", "right", "multi_desktop", "close", "vertical", "descending", "minimum"]:
 					i = 1
-				elif string in ["center", "single_monitor", "toggle", "left2right", "follow_size", "normal"]:
++				elif string in ["center", "viewports", "single_monitor", "toggle", "left2right", "follow_size", "normal"]:
 					i = 2
 				elif string in ["right2left"]:
 					i = 3
